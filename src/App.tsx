@@ -1,11 +1,25 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+
 import './App.css';
-import Home from './components/Home';
+import Home from './views/Home';
+import Profile from './views/Profile';
+import Upload from './views/Upload';
+import Layout from './components/Layout';
+
 const App = () => {
   return (
     <>
-      <h1>My App</h1>
-      <Home />
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/upload" element={<Upload />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </>
   );
 };
+
 export default App;
