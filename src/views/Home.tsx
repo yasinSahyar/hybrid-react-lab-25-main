@@ -1,26 +1,47 @@
 //Home.tsx
-
-import { MediaItem } from 'hybrid-types/DBTypes';
+import {
+  MediaItem,
+  MediaItemWithOwner,
+  UserWithNoPassword,
+} from 'hybrid-types/DBTypes';
 import MediaRow from '../components/MediaRow';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import SingleView from '../components/SingleView';
-import { fetchData } from '../lib/functions';
+import {fetchData} from '../lib/functions';
 
 const Home = () => {
-  const [mediaArray, setMediaArray] = useState<MediaItem[]>([]);
-  const [selectedItem, setSelectedItem] = useState<MediaItem | undefined>(
-    undefined,
-  );
+  const [mediaArray, setMediaArray] = useState<MediaItemWithOwner[]>([]);
+  const [selectedItem, setSelectedItem] = useState<
+    MediaItemWithOwner | undefined
+  >(undefined);
 
   useEffect(() => {
     const getMedia = async () => {
       try {
-        const json = await fetchData<MediaItem[]>('test.json');
-        if (json) {
-          setMediaArray(json);
-        } else {
-          console.error('No data found in test.json');
-        }
+        // kaikki mediat ilman omistajan tietoja
+        const media = await fetchData<MediaItem[]>(
+          import.meta.env.VITE_MEDIA_API + '/media',
+        );
+        // haetaan omistajat id:n perusteella
+        const mediaWithOwner: MediaItemWithOwner[] = await Promise.all(
+          media.map(async (item) => {
+            const owner = await fetchData<UserWithNoPassword>(
+              // HUOM: media_id päivitetty user_id:ksi
+              import.meta.env.VITE_AUTH_API + '/users/' + item.user_id,
+            );
+
+            const mediaItem: MediaItemWithOwner = {
+              ...item,
+              username: owner.username,
+            };
+            // muista päivitää tyypit: 'npm i -D github:ilkkamtk/hybrid-types'
+            return mediaItem;
+          }),
+        );
+
+        console.log(mediaWithOwner);
+
+        setMediaArray(mediaWithOwner);
       } catch (error) {
         console.error((error as Error).message);
       }
@@ -46,6 +67,7 @@ const Home = () => {
             <th>Created</th>
             <th>Size</th>
             <th>Type</th>
+            <th>Owner</th>
           </tr>
         </thead>
         <tbody>
@@ -61,5 +83,4 @@ const Home = () => {
     </>
   );
 };
-
 export default Home;
