@@ -71,7 +71,7 @@ const useUser = () => {
   // TODO: implement auth/user server API connections here
   const getUserByToken = async (token: string) => {
     const options = {
-      headers: {Authorization: 'Bearer ' + token}
+      headers: {Authorization: 'Bearer ' + token},
     };
     return await fetchData<UserResponse>(
       import.meta.env.VITE_AUTH_API + '/users/token',
