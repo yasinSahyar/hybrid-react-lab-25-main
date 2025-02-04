@@ -6,7 +6,7 @@ import react from '@vitejs/plugin-react-swc';
 export default defineConfig({
   plugins: [react()],
   //base: '/~mattpe/hybrid-react-build/',
-  base: '~yasinsay/hybridApp',
+  base: '~yasinsay/hybridAppi',
   test: {
     environment: 'jsdom',
     globals: true,
