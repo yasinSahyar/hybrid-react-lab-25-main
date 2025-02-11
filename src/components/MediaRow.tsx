@@ -1,5 +1,6 @@
 import {MediaItemWithOwner} from 'hybrid-types/DBTypes';
 import {Link} from 'react-router';
+import {useUserContext} from '../hooks/ContextHooks';
 
 type MediaItemProps = {
   item: MediaItemWithOwner;
@@ -7,11 +8,12 @@ type MediaItemProps = {
 };
 
 const MediaRow = (props: MediaItemProps) => {
+  const {user} = useUserContext();
   const {item} = props;
   return (
     <article className="w-full rounded-md bg-stone-600">
       <img
-        className="h-72 w-full rounded-md object-cover"
+        className="h-72 w-full rounded-t-md object-cover"
         src={
           item.thumbnail ||
           (item.screenshots && item.screenshots[2]) ||
@@ -35,12 +37,32 @@ const MediaRow = (props: MediaItemProps) => {
         </div>
         <p>
           <Link
-            className="block bg-stone-500 p-2 text-center transition-all duration-500 ease-in-out hover:bg-stone-700"
+            className="block w-full bg-stone-500 p-2 text-center transition-all duration-500 ease-in-out hover:bg-stone-700"
             to="/single"
             state={{item}}
           >
             Show
           </Link>
+          {(user?.user_id === item.user_id || user?.level_name === 'Admin') && (
+            <>
+              <button
+                onClick={() => {
+                  console.log('Modify painettu', item.media_id);
+                }}
+                className="block w-full bg-indigo-400 p-2 text-center transition-all duration-500 ease-in-out hover:bg-indigo-700"
+              >
+                Modify
+              </button>
+              <button
+                onClick={() => {
+                  console.log('Delete painettu', item.media_id);
+                }}
+                className="block w-full bg-orange-400 p-2 text-center transition-all duration-500 ease-in-out hover:bg-orange-700"
+              >
+                Delete
+              </button>
+            </>
+          )}
         </p>
       </div>
     </article>
