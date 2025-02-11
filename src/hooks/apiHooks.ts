@@ -7,6 +7,7 @@ import {useEffect, useState} from 'react';
 import {fetchData} from '../lib/functions';
 import {Credentials, RegisterCredentials} from '../types/LocalTypes';
 import {
+  AvailableResponse,
   LoginResponse,
   MessageResponse,
   UploadResponse,
@@ -77,7 +78,10 @@ const useMedia = () => {
       },
       body: JSON.stringify(media),
     };
-    return await fetchData<MessageResponse>(import.meta.env.VITE_MEDIA_API + '/media', options);
+    return await fetchData<MessageResponse>(
+      import.meta.env.VITE_MEDIA_API + '/media',
+      options,
+    );
   };
 
   return {mediaArray, postMedia};
@@ -155,7 +159,24 @@ const useUser = () => {
     }
   };
 
-  return {getUserByToken, postRegister};
+  const getUserNameAvailable = async (username: string) => {
+    return await fetchData<AvailableResponse>(
+      import.meta.env.VITE_AUTH_API + '/users/username/' + username,
+    );
+  };
+
+  const getEmailAvailable = async (email: string) => {
+    return await fetchData<AvailableResponse>(
+      import.meta.env.VITE_AUTH_API + '/users/email/' + email,
+    );
+  };
+
+  return {
+    getUserByToken,
+    postRegister,
+    getUserNameAvailable,
+    getEmailAvailable,
+  };
 };
 
 const useComments = () => {
