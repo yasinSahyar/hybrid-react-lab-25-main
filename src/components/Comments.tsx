@@ -2,21 +2,33 @@ import {MediaItemWithOwner} from 'hybrid-types/DBTypes';
 import {useUserContext} from '../hooks/ContextHooks';
 import {useForm} from '../hooks/formHooks';
 import {useCommentStore} from '../store';
-import {useRef} from 'react';
+import {useEffect, useRef} from 'react';
+import {useComment} from '../hooks/apiHooks';
 
 const Comments = ({item}: {item: MediaItemWithOwner}) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const user = useUserContext();
-  const {comments, addComment} = useCommentStore();
+  const {comments, setComments} = useCommentStore();
+  const {postComment, getCommentsByMediaId} = useComment();
 
   const initValues = {comment_text: ''};
-  const doComment = () => {
-    addComment({
-      comment_text: inputs.comment_text,
-      username: user.user?.username,
-      user_id: user.user?.user_id,
-      media_id: item.media_id,
-    });
+  const doComment = async () => {
+    // adding comments "locally" (dummy version)
+    // addComment({
+    //   comment_text: inputs.comment_text,
+    //   username: user.user?.username,
+    //   user_id: user.user?.user_id,
+    //   media_id: item.media_id,
+    // });
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return;
+    }
+    // TODO: add try-catch & user notification
+    await postComment(inputs.comment_text, item.media_id, token);
+    // update comments after post
+    getComments();
     // reset form
     if (inputRef.current) {
       inputRef.current.value = '';
@@ -28,6 +40,20 @@ const Comments = ({item}: {item: MediaItemWithOwner}) => {
     doComment,
     initValues,
   );
+
+  const getComments = async () => {
+    try {
+      const comments = await getCommentsByMediaId(item.media_id);
+      setComments(comments);
+    } catch (error) {
+      setComments([]);
+      console.error((error as Error).message);
+    }
+  };
+
+  useEffect(() => {
+    getComments();
+  }, []);
 
   return (
     <>
