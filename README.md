@@ -48,7 +48,7 @@ export default tseslint.config({
   },
 })
 ```
-![Proje Görseli](./img/Screenshot%202025-02-04%20233522.png)
+![Proje Görseli](./img/Screenshot%202025-02-23%20182532.png)
 
 # hybrid-react-lab-25
 Click here [to view the link](https://users.metropolia.fi/~yasinsay/hybridAppi/)text in a browser.
